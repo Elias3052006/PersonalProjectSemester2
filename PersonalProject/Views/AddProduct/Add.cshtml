@@ -1,0 +1,29 @@
+﻿@model ViewLayer.Models.AddProductViewModel
+
+<form asp-action="Add" asp-controller="Product" method="post">
+    <div>
+        <label for="titel">Titel</label>
+        <input asp-for="Titel">
+        <span asp-validation-for="Titel"></span>
+    </div>
+
+    <div>
+        <label for="description">Beschrijving</label>
+        <input asp-for="Description">
+        <span asp-validation-for="Description"></span>
+    </div>
+
+    <div>
+        <label for="stock">Voorraad</label>
+        <input asp-for="Stock">
+        <span asp-validation-for="Stock"></span>
+    </div>
+
+    <div>
+        <label for="oem">OEM</label>
+        <input asp-for="OEM">
+        <span asp-validation-for="OEM"></span>
+    </div>
+
+    <button type="submit">Product toevoegen</button>
+</form>
