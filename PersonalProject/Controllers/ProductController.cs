@@ -5,12 +5,12 @@ using LogicLayer.Service;
 
 namespace ViewLayer.Controllers
 {
-    public class AddProductController : Controller
+    public class ProductController : Controller
     {
         private readonly ProductService _productService;
-        public AddProductController()
+        public ProductController(ProductService productService)
         {
-            _productService = new ProductService();
+            _productService = productService;
         }
         [HttpGet] public IActionResult Add() 
         {
