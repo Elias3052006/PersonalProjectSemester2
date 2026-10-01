@@ -1,28 +1,58 @@
 ﻿@model ViewLayer.Models.AddProductViewModel
 
 <form asp-action="Add" asp-controller="Product" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+
     <div>
-        <label for="titel">Titel</label>
-        <input asp-for="Titel">
-        <span asp-validation-for="Titel"></span>
+        <label asp-for="Title">Titel</label>
+        <input asp-for="Title" />
+        <span asp-validation-for="Title"></span>
     </div>
 
     <div>
-        <label for="description">Beschrijving</label>
-        <input asp-for="Description">
+        <label asp-for="Description">Beschrijving</label>
+        <input asp-for="Description" />
         <span asp-validation-for="Description"></span>
     </div>
 
     <div>
-        <label for="stock">Voorraad</label>
-        <input asp-for="Stock">
+        <label asp-for="Stock">Voorraad</label>
+        <input asp-for="Stock" />
         <span asp-validation-for="Stock"></span>
     </div>
 
     <div>
-        <label for="oem">OEM</label>
-        <input asp-for="OEM">
+        <label asp-for="OEM">OEM</label>
+        <input asp-for="OEM" />
         <span asp-validation-for="OEM"></span>
+    </div>
+
+    <div>
+        <label asp-for="Price">Prijs</label>
+        <input asp-for="Price" />
+        <span asp-validation-for="Price"></span>
+    </div>
+
+    <div>
+        <label asp-for="BrandId">Merk</label>
+        <select asp-for="BrandId" asp-items="Model.Brands">
+            <option value="">-- Kies een merk --</option>
+        </select>
+        <span asp-validation-for="BrandId"></span>
+    </div>
+
+    <div>
+        <label asp-for="CategoryId">Categorie</label>
+        <select asp-for="CategoryId" asp-items="Model.Categories">
+            <option value="">-- Kies een categorie --</option>
+        </select>
+        <span asp-validation-for="CategoryId"></span>
+    </div>
+
+    <div>
+        <label asp-for="PhotoUrl">Foto-url</label>
+        <input asp-for="PhotoUrl" />
+        <span asp-validation-for="PhotoUrl"></span>
     </div>
 
     <button type="submit">Product toevoegen</button>

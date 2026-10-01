@@ -1,37 +1,66 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ViewLayer.Models;
-using LogicLayer.Domain;
+﻿using LogicLayer.Domain;
 using LogicLayer.Service;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using ViewLayer.Models;
 
 namespace ViewLayer.Controllers
 {
     public class ProductController : Controller
     {
         private readonly ProductService _productService;
+
         public ProductController(ProductService productService)
         {
             _productService = productService;
         }
-        [HttpGet] public IActionResult Add() 
+
+        [HttpGet]
+        public IActionResult Add()
         {
-            return View(new AddProductViewModel());
+            var model = new AddProductViewModel();
+            FillLists(model);
+            return View(model);
         }
-        [HttpPost] public IActionResult Add(AddProductViewModel model) 
-        { 
-            if (!ModelState.IsValid) 
+
+        [HttpPost]
+        public IActionResult Add(AddProductViewModel model)
+        {
+            if (!ModelState.IsValid)
             {
+                FillLists(model);
                 return View(model);
             }
 
-            Product NewProduct = new Product(model.Titel, model.Description, model.OEM, model.Stock);
+            try
+            {
+                Brand brand = _productService.GetBrand(model.BrandId);
+                Category category = _productService.GetCategory(model.CategoryId);
+                Photo[] photos = { new Photo(1, model.PhotoUrl, 0) };
 
-            _productService.CreateProduct(NewProduct);
+                Product newProduct = new Product(model.Title, model.Description, model.Stock,
+                                                 model.OEM, model.Price, category, brand, photos);
+                _productService.CreateProduct(newProduct);
 
+                return RedirectToAction("Add");
+            }
+            catch (Exception ex) when (ex is ArgumentException || ex is KeyNotFoundException)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                FillLists(model);
+                return View(model);
+            }
+        }
 
-            return RedirectToAction("Add");
-            
+        private void FillLists(AddProductViewModel model)
+        {
+            model.Brands = _productService.GetBrands()
+                .Select(b => new SelectListItem(b.Name, b.BrandId.ToString()))
+                .ToList();
 
-
+            model.Categories = _productService.GetCategories()
+                .Select(c => new SelectListItem(c.Name, c.CategoryId.ToString()))
+                .ToList();
         }
     }
 }
