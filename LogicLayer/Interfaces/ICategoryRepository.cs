@@ -8,7 +8,7 @@ namespace LogicLayer.Interfaces
 {
     public interface ICategoryRepository
     {
-        IReadOnlyCollection<Category> GetAll();
+        IReadOnlyList<Category> GetAll();
         Category GetById(int categoryid);
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using DataLayer.DataContext;
 using LogicLayer.Domain;
 using LogicLayer.Interfaces;
@@ -62,7 +61,6 @@ namespace DataLayer.Repository
                     photoCommand.ExecuteNonQuery();
                 }
 
-                // Product en foto's worden samen opgeslagen, of allebei niet.
                 transaction.Commit();
             }
             catch
