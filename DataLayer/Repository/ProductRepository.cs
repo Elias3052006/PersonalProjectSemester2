@@ -56,7 +56,7 @@ namespace DataLayer.Repository
                 {
                     using var photoCommand = new MySqlCommand(insertPhoto, connection, transaction);
                     photoCommand.Parameters.AddWithValue("@PhotoNumber", photo.PhotoNumber);
-                    photoCommand.Parameters.AddWithValue("@Url", photo.Url);
+                    photoCommand.Parameters.AddWithValue("@Url", photo.URL);
                     photoCommand.Parameters.AddWithValue("@ProductId", productId);
                     photoCommand.ExecuteNonQuery();
                 }
