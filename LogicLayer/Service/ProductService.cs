@@ -6,8 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using LogicLayer.Domain;
 
-using LogicLayer.Domain;
-using LogicLayer.Interfaces;
 
 namespace LogicLayer.Service
 {
@@ -28,7 +26,6 @@ namespace LogicLayer.Service
 
         public void CreateProduct(Product product)
         {
-          
             _productRepository.Add(product);
         }
 

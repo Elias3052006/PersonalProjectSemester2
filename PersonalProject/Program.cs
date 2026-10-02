@@ -1,3 +1,7 @@
+using DataLayer.DataContext;
+using DataLayer.Repository;
+using LogicLayer.Interfaces;
+using LogicLayer.Service;
 namespace PersonalProject
 {
     public class Program
@@ -9,6 +13,17 @@ namespace PersonalProject
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+
+            string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            DatabaseContext databaseContext = new DatabaseContext(connectionString);
+            builder.Services.AddSingleton(databaseContext);
+
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IBrandRepository, BrandRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+            builder.Services.AddScoped<ProductService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
