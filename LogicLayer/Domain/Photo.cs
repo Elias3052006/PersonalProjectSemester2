@@ -13,6 +13,7 @@ namespace LogicLayer.Domain
         public int PhotoId { get; }
         public Photo(int photoNumber, string url, int photoId)
         {
+            
             PhotoNumber = photoNumber;
             URL = url;
             PhotoId = photoId;

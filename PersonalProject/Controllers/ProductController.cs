@@ -36,15 +36,20 @@ namespace ViewLayer.Controllers
             {
                 Brand brand = _productService.GetBrand(model.BrandId);
                 Category category = _productService.GetCategory(model.CategoryId);
+
                 Photo[] photos = { new Photo(1, model.PhotoUrl, 0) };
 
-                Product newProduct = new Product(model.Title, model.Description, model.Stock,
-                                                 model.OEM, model.Price, category, brand, photos);
+                Product newProduct = new Product(
+                    model.Title, 
+                    model.Description, 
+                    model.Stock,
+                    model.OEM,
+                    model.Price, category, brand, photos);
                 _productService.CreateProduct(newProduct);
 
                 return RedirectToAction("Add");
             }
-            catch (Exception ex) when (ex is ArgumentException || ex is KeyNotFoundException)
+            catch (ArgumentException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
                 FillLists(model);
@@ -54,13 +59,17 @@ namespace ViewLayer.Controllers
 
         private void FillLists(AddProductViewModel model)
         {
-            model.Brands = _productService.GetBrands()
-                .Select(b => new SelectListItem(b.Name, b.BrandId.ToString()))
-                .ToList();
+            model.Brands = new List<SelectListItem>();
+            foreach (var brand in _productService.GetBrands())
+            {
+                model.Brands.Add(new SelectListItem(brand.Name, brand.BrandId.ToString()));
+            }
 
-            model.Categories = _productService.GetCategories()
-                .Select(c => new SelectListItem(c.Name, c.CategoryId.ToString()))
-                .ToList();
+            model.Categorys = new List<SelectListItem>();
+            foreach (var category in _productService.GetCategories())
+            {
+                model.Categorys.Add(new SelectListItem(category.Name, category.CategoryId.ToString()));
+            }
         }
     }
 }

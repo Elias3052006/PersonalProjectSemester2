@@ -29,12 +29,28 @@ namespace LogicLayer.Service
             _productRepository.Add(product);
         }
 
-        public IReadOnlyList<Brand> GetBrands() => _brandRepository.GetAll();
+        public IReadOnlyList<Brand> GetBrands()
+        {
+            IReadOnlyList<Brand> allBrands = _brandRepository.GetAll();
+            return allBrands;
+        }
 
-        public IReadOnlyList<Category> GetCategories() => _categoryRepository.GetAll();
+        public IReadOnlyList<Category> GetCategories()
+        {
+            IReadOnlyList<Category> allCategories = _categoryRepository.GetAll();
+            return allCategories;
+        }
 
-        public Brand GetBrand(int brandId) => _brandRepository.GetById(brandId);
+        public Brand GetBrand(int brandId)
+        {
+            Brand brand = _brandRepository.GetById(brandId);
+            return brand;
+        }
 
-        public Category GetCategory(int categoryId) => _categoryRepository.GetById(categoryId);
+        public Category GetCategory(int categoryId)
+        {
+            Category category = _categoryRepository.GetById(categoryId);
+            return category;
+        }
     }
 }

@@ -18,7 +18,24 @@
     public Product(string title, string description, int stock, string oem, decimal price,
                    Category category, Brand brand, Photo[] photos)
     {
-        
+        if (string.IsNullOrWhiteSpace(title))
+            throw new ArgumentException("Titel is verplicht");
+        if (string.IsNullOrWhiteSpace(description))
+            throw new ArgumentException("Beschrijving is verplicht");
+        if (stock < 0)
+            throw new ArgumentException("Voorraad mag niet negatief zijn");
+        if (string.IsNullOrWhiteSpace(oem))
+            throw new ArgumentException("OEM is verplicht");
+        if (price <= 0)
+            throw new ArgumentException("Prijs moet groter zijn dan 0");
+        if (category == null)
+            throw new ArgumentException("Categorie is verplicht");
+        if (brand == null)
+            throw new ArgumentException("Merk is verplicht");
+        if (photos == null)
+            throw new ArgumentException("Minstens één foto is verplicht");
+        if (photos.Length == 0)
+            throw new ArgumentException("Minstens één foto is verplicht");
 
         Title = title;
         Description = description;
@@ -28,29 +45,7 @@
         Category = category;
         Brand = brand;
         _photos.AddRange(photos);
-        IsActive = false; 
-    }
-
-    public void IncreaseStock(int amount)
-    {
-        if (amount <= 0)
-        {
-            throw new ArgumentException("Het aantal moet groter zijn dan 0");
-        }
-        Stock += amount;
-    }
-
-    public void DecreaseStock(int amount)
-    {
-        if (amount <= 0)
-        {
-            throw new ArgumentException("Het aantal moet groter zijn dan 0");
-        }
-        if (amount > Stock)
-        {
-            throw new ArgumentException("Er is niet genoeg voorraad");
-        }
-        Stock -= amount;
+        IsActive = true; 
     }
 
     public void AddPhoto(Photo photo)
@@ -58,8 +53,14 @@
         _photos.Add(photo);
     }
 
-    public void Activate() => IsActive = true;
+    public void Activate()
+    {
+        IsActive = true;
+    }
 
-    public void Deactivate() => IsActive = false;
+    public void Deactivate()
+    {
+        IsActive = false;
+    }
 }
 
