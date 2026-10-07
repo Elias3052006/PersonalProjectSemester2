@@ -9,10 +9,14 @@ namespace ViewLayer.Controllers
     public class ProductController : Controller
     {
         private readonly ProductService _productService;
+        private readonly CategoryService _categoryService;
+        private readonly BrandService _brandService;
 
-        public ProductController(ProductService productService)
+        public ProductController(ProductService productService, CategoryService categoryService, BrandService brandService)
         {
             _productService = productService;
+            _categoryService = categoryService;
+            _brandService = brandService;
         }
 
         [HttpGet]
@@ -34,8 +38,8 @@ namespace ViewLayer.Controllers
 
             try
             {
-                Brand brand = _productService.GetBrand(model.BrandId);
-                Category category = _productService.GetCategory(model.CategoryId);
+                Brand brand = _brandService.GetBrand(model.BrandId);
+                Category category = _categoryService.GetCategory(model.CategoryId);
 
                 Photo[] photos = { new Photo(1, model.PhotoUrl, 0) };
 
@@ -51,7 +55,7 @@ namespace ViewLayer.Controllers
             }
             catch (ArgumentException ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
+                ModelState.AddModelError(string.Empty,ex.Message);
                 FillLists(model);
                 return View(model);
             }
@@ -60,13 +64,13 @@ namespace ViewLayer.Controllers
         private void FillLists(AddProductViewModel model)
         {
             model.Brands = new List<SelectListItem>();
-            foreach (var brand in _productService.GetBrands())
+            foreach (var brand in _brandService.GetBrands())
             {
                 model.Brands.Add(new SelectListItem(brand.Name, brand.BrandId.ToString()));
             }
 
             model.Categorys = new List<SelectListItem>();
-            foreach (var category in _productService.GetCategories())
+            foreach (var category in _categoryService.GetCategorys())
             {
                 model.Categorys.Add(new SelectListItem(category.Name, category.CategoryId.ToString()));
             }

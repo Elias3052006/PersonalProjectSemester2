@@ -13,7 +13,10 @@
     public bool IsActive { get; private set; }
     public Category Category { get; }
     public Brand Brand { get; }
-    public IReadOnlyList<Photo> Photos => _photos;
+    public IReadOnlyList<Photo> Photos
+    {
+        get { return _photos; }
+    }
 
     public Product(string title, string description, int stock, string oem, decimal price,
                    Category category, Brand brand, Photo[] photos)

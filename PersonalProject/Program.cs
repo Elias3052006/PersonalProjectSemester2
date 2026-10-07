@@ -22,8 +22,9 @@ namespace PersonalProject
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IBrandRepository, BrandRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-
+            builder.Services.AddScoped<CategoryService>();
             builder.Services.AddScoped<ProductService>();
+            builder.Services.AddScoped<BrandService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
