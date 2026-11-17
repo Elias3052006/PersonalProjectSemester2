@@ -10,5 +10,7 @@ namespace LogicLayer.Interfaces
     public interface IProductRepository
     {
         void Add(Product product);
+        IReadOnlyList<Product> GetAll();
+        IReadOnlyList<Product> Search(string query);
     }
 }

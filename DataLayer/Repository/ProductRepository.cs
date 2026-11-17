@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DataLayer.DataContext;
 using LogicLayer.Domain;
 using LogicLayer.Interfaces;
@@ -13,12 +10,17 @@ namespace DataLayer.Repository
     public class ProductRepository : IProductRepository
     {
         private readonly DatabaseContext _context;
+        private readonly IBrandRepository _brandRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public ProductRepository(DatabaseContext context)
+        public ProductRepository(DatabaseContext context,
+                                 IBrandRepository brandRepository,
+                                 ICategoryRepository categoryRepository)
         {
             _context = context;
+            _brandRepository = brandRepository;
+            _categoryRepository = categoryRepository;
         }
-
         public void Add(Product product)
         {
             ArgumentNullException.ThrowIfNull(product);
@@ -68,6 +70,90 @@ namespace DataLayer.Repository
                 transaction.Rollback();
                 throw;
             }
+        }
+        public IReadOnlyList<Product> GetAll()
+        {
+            using var connection = _context.CreateConnection();
+            connection.Open();
+
+            string sql = "SELECT ProductId, Title, Description, Stock, OEM, Price, IsActive, BrandId, CategoryId " +
+                         "FROM product " +
+                         "WHERE IsActive = 1;";
+
+            using var command = new MySqlCommand(sql, connection);
+            return ReadProducts(command);
+        }
+        public IReadOnlyList<Product> Search(string query)
+        {
+            using var connection = _context.CreateConnection();
+            connection.Open();
+
+            string sql = "SELECT p.ProductId, p.Title, p.Description, p.Stock, p.OEM, p.Price, p.IsActive, p.BrandId, p.CategoryId " +
+                         "FROM product p " +
+                         "JOIN brand b ON b.BrandId = p.BrandId " +
+                         "JOIN category c ON c.CategoryId = p.CategoryId " +
+                         "WHERE p.IsActive = 1 " +
+                         "AND (p.Title LIKE @Search OR p.OEM LIKE @Search OR b.Name LIKE @Search OR c.Name LIKE @Search);";
+
+            using var command = new MySqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@Search", "%" + query + "%");
+            return ReadProducts(command);
+        }
+        private List<Product> ReadProducts(MySqlCommand command)
+        {
+            List<Product> products = new List<Product>();
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                int productId = reader.GetInt32("ProductId");
+                int brandId = reader.GetInt32("BrandId");
+                int categoryId = reader.GetInt32("CategoryId");
+
+                Brand brand = _brandRepository.GetById(brandId);
+                Category category = _categoryRepository.GetById(categoryId);
+                Photo[] photos = GetPhotos(productId);
+
+                Product product = new Product(
+                    productId,
+                    reader.GetString("Title"),
+                    reader.GetString("Description"),
+                    reader.GetInt32("Stock"),
+                    reader.GetString("OEM"),
+                    reader.GetDecimal("Price"),
+                    reader.GetBoolean("IsActive"),
+                    category,
+                    brand,
+                    photos);
+
+                products.Add(product);
+            }
+
+            return products;
+        }
+
+        private Photo[] GetPhotos(int productId)
+        {
+            List<Photo> photos = new List<Photo>();
+
+            using var connection = _context.CreateConnection();
+            connection.Open();
+
+            string sql = "SELECT PhotoId, PhotoNumber, Url FROM photo WHERE ProductId = @ProductId ORDER BY PhotoNumber;";
+            using var command = new MySqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@ProductId", productId);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                Photo photo = new Photo(
+                    reader.GetInt32("PhotoNumber"),
+                    reader.GetString("Url"),
+                    reader.GetInt32("PhotoId"));
+                photos.Add(photo);
+            }
+
+            return photos.ToArray();
         }
     }
 }

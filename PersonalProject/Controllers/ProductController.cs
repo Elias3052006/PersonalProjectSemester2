@@ -20,6 +20,30 @@ namespace ViewLayer.Controllers
         }
 
         [HttpGet]
+        public IActionResult Index(ProductOverviewViewModel model)
+        {
+            try
+            {
+                model.Result = _productService.GetProducts(model.ToFilter(), model.Page);
+            }
+            catch (ArgumentException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                model.Result = PagedResponse<Product>.Create(new List<Product>(), 1, 12);
+            }
+
+            FillFilterLists(model);
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult Search(SearchViewModel model)
+        {
+            model.Products = _productService.SearchProducts(model.Query);
+            return View(model);
+        }
+
+        [HttpGet]
         public IActionResult Add()
         {
             var model = new AddProductViewModel();
@@ -38,30 +62,34 @@ namespace ViewLayer.Controllers
 
             try
             {
-                Brand brand = _brandService.GetBrand(model.BrandId);
-                Category category = _categoryService.GetCategory(model.CategoryId);
-
-                Photo[] photos = { new Photo(1, model.PhotoUrl, 0) };
-
-                Product newProduct = new Product(
-                    model.Title, 
-                    model.Description, 
-                    model.Stock,
-                    model.OEM,
-                    model.Price, category, brand, photos);
-                _productService.CreateProduct(newProduct);
+                _productService.CreateProduct(model.ToRequest());
 
                 return RedirectToAction("Add");
             }
             catch (ArgumentException ex)
             {
-                ModelState.AddModelError(string.Empty,ex.Message);
+                ModelState.AddModelError(string.Empty, ex.Message);
                 FillLists(model);
                 return View(model);
             }
         }
 
         private void FillLists(AddProductViewModel model)
+        {
+            model.Brands = new List<SelectListItem>();
+            foreach (var brand in _brandService.GetBrands())
+            {
+                model.Brands.Add(new SelectListItem(brand.Name, brand.BrandId.ToString()));
+            }
+
+            model.Categorys = new List<SelectListItem>();
+            foreach (var category in _categoryService.GetCategorys())
+            {
+                model.Categorys.Add(new SelectListItem(category.Name, category.CategoryId.ToString()));
+            }
+        }
+
+        private void FillFilterLists(ProductOverviewViewModel model)
         {
             model.Brands = new List<SelectListItem>();
             foreach (var brand in _brandService.GetBrands())

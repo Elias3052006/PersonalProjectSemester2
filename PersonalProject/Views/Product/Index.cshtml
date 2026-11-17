@@ -1,0 +1,75 @@
+﻿@model ViewLayer.Models.ProductOverviewViewModel
+@{
+    ViewData["Title"] = "Products";
+}
+
+<h1>Products</h1>
+
+<form asp-action="Search" method="get">
+    <input type="text" name="Query" placeholder="Search on OEM, category, title or brand" />
+    <button type="submit">Search</button>
+</form>
+
+<form asp-action="Index" method="get">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <select asp-for="CategoryId" asp-items="Model.Categorys">
+        <option value="">All categories</option>
+    </select>
+
+    <select asp-for="BrandId" asp-items="Model.Brands">
+        <option value="">All brands</option>
+    </select>
+
+    <input asp-for="MinPrice" placeholder="Min price" />
+    <input asp-for="MaxPrice" placeholder="Max price" />
+
+    <select asp-for="PageSize">
+        <option value="12">12</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+    </select>
+
+    <button type="submit">Filter</button>
+    <a asp-action="Index">Reset</a>
+</form>
+
+@if (Model.Result.TotalCount == 0)
+{
+    <p>No products found.</p>
+}
+else
+{
+    <p>@Model.Result.TotalCount products found</p>
+
+    <div style="display:flex; flex-wrap:wrap; gap:16px;">
+        @foreach (Product product in Model.Result.Items)
+        {
+            <partial name="_ProductCard" model="product" />
+        }
+    </div>
+
+    <p>Page @Model.Result.Page of @Model.Result.TotalPages</p>
+
+    @if (Model.Result.Page > 1)
+    {
+        <a asp-action="Index"
+           asp-route-Page="@(Model.Result.Page - 1)"
+           asp-route-PageSize="@Model.PageSize"
+           asp-route-CategoryId="@Model.CategoryId"
+           asp-route-BrandId="@Model.BrandId"
+           asp-route-MinPrice="@Model.MinPrice"
+           asp-route-MaxPrice="@Model.MaxPrice">Previous</a>
+    }
+
+    @if (Model.Result.Page < Model.Result.TotalPages)
+    {
+        <a asp-action="Index"
+           asp-route-Page="@(Model.Result.Page + 1)"
+           asp-route-PageSize="@Model.PageSize"
+           asp-route-CategoryId="@Model.CategoryId"
+           asp-route-BrandId="@Model.BrandId"
+           asp-route-MinPrice="@Model.MinPrice"
+           asp-route-MaxPrice="@Model.MaxPrice">Next</a>
+    }
+}

@@ -1,10 +1,10 @@
 ﻿using LogicLayer.Domain;
 
-
-    public class Product
+public class Product
 {
     private readonly List<Photo> _photos = new();
 
+    public int ProductId { get; private set; }
     public string Title { get; }
     public string Description { get; }
     public int Stock { get; private set; }
@@ -18,8 +18,8 @@
         get { return _photos; }
     }
 
-    public Product(string title, string description, int stock, string oem, decimal price,
-                   Category category, Brand brand, Photo[] photos)
+    public Product(int productId, string title, string description, int stock, string oem,
+                   decimal price, bool isActive, Category category, Brand brand, Photo[] photos)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("Titel is verplicht");
@@ -40,15 +40,16 @@
         if (photos.Length == 0)
             throw new ArgumentException("Minstens één foto is verplicht");
 
+        ProductId = productId;
         Title = title;
         Description = description;
         Stock = stock;
         OEM = oem;
         Price = price;
+        IsActive = isActive;
         Category = category;
         Brand = brand;
         _photos.AddRange(photos);
-        IsActive = true; 
     }
 
     public void AddPhoto(Photo photo)
@@ -66,4 +67,3 @@
         IsActive = false;
     }
 }
-
